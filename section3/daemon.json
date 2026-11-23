@@ -1,6 +1,0 @@
-{
-  "icc": false,
-  "no-new-privileges": true,
-  "userns-remap": "default",
-  "log-driver": "json-file"
-}
