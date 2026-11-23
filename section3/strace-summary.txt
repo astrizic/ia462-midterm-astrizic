@@ -1,0 +1,57 @@
+ * Serving Flask app 'app'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.17.0.4:5000
+[33mPress CTRL+C to quit[0m
+^Cstrace: Process 9 detached
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+  0.04    0.000022          22         1         1 access
+  0.04    0.000022          22         1           arch_prctl
+  0.07    0.000038          38         1           bind
+  0.79    0.000457           5        83           brk
+  6.26    0.003626          11       319           close
+  0.18    0.000107          35         3         2 connect
+  0.00    0.000000           0         1           epoll_create1
+  0.00    0.000000           0         1           execve
+  0.09    0.000054          13         4           fcntl
+  9.22    0.005338           9       549           fstat
+  0.11    0.000065           3        20           futex
+  0.09    0.000052          17         3           getcwd
+  1.32    0.000766          11        66           getdents64
+  0.00    0.000000           0         1           getegid
+  0.00    0.000000           0         1           geteuid
+  0.00    0.000000           0         1           getgid
+  0.03    0.000015           7         2           getpid
+  0.07    0.000038          19         2           getrandom
+  0.02    0.000014           7         2           getsockname
+  0.03    0.000020          10         2           gettid
+  0.00    0.000000           0         1           getuid
+  3.94    0.002279           9       238       228 ioctl
+  0.01    0.000008           8         1           listen
+  7.24    0.004190           8       468         3 lseek
+  5.35    0.003096          16       189           mmap
+  1.18    0.000682          17        40           mprotect
+  0.00    0.000000           0         5           mremap
+  0.26    0.000151          15        10           munmap
+ 32.68    0.018927          13      1365       116 newfstatat
+ 17.18    0.009949          17       572       257 openat
+  1.09    0.000634          18        34         1 poll
+  0.08    0.000044          22         2           pread64
+  0.03    0.000020          20         1           prlimit64
+  9.60    0.005559          10       511           read
+  0.06    0.000037           7         5         4 readlink
+  0.11    0.000066          66         1           readlinkat
+  0.05    0.000029          29         1           rseq
+  2.12    0.001229          18        65           rt_sigaction
+  0.13    0.000074          18         4           rt_sigprocmask
+  0.05    0.000031          31         1           set_robust_list
+  0.04    0.000025          25         1           set_tid_address
+  0.01    0.000008           8         1           setsockopt
+  0.12    0.000068          17         4           socket
+  0.02    0.000014           4         3           uname
+  0.27    0.000157          39         4           write
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.057911          12      4590       612 total

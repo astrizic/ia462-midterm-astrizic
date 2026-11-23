@@ -1,0 +1,395 @@
+**********************
+PowerShell transcript start
+Start time: 20261119122535
+Username: ADAMS-PC-1-1\Adams-PC1-1
+RunAs User: ADAMS-PC-1-1\Adams-PC1-1
+Configuration Name: 
+Machine: ADAMS-PC-1-1 (Microsoft Windows NT 10.0.19045.0)
+Host Application: C:\Users\Adams-PC1-1\AppData\Local\Microsoft\WindowsApps\Microsoft.PowerShell_8wekyb3d8bbwe\pwsh.exe
+Process ID: 51108
+PSVersion: 7.7.0
+PSEdition: Core
+GitCommitId: 7.7.0
+OS: Microsoft Windows 10.0.19045
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is C:\Users\Adams-PC1-1\Documents\School work\EMU Clases\IA-462\Midterm\Windows\windows-transcript.txt
+PS C:\Users\Adams-PC1-1> Get-MpComputerStatus | Select-Object AMServiceEnabled, AntivirusEnabled, RealTimeProtectionEnabled, IsTamperProtected, AMEngineVersion, AntivirusSignatureLastUpdated
+
+AMServiceEnabled              : True
+AntivirusEnabled              : True
+RealTimeProtectionEnabled     : True
+IsTamperProtected             : True
+AMEngineVersion               : 1.1.26100.4
+AntivirusSignatureLastUpdated : 11/18/2026 12:47:36 PM
+
+PS C:\Users\Adams-PC1-1> Get-NetFirewallProfile | Select-Object Name, Enabled, DefaultInboundAction, DefaultOutboundAction, LogAllowed, LogBlocked
+
+Name                  : Domain
+Enabled               : True
+DefaultInboundAction  : NotConfigured
+DefaultOutboundAction : NotConfigured
+LogAllowed            : False
+LogBlocked            : False
+
+Name                  : Private
+Enabled               : True
+DefaultInboundAction  : NotConfigured
+DefaultOutboundAction : NotConfigured
+LogAllowed            : False
+LogBlocked            : False
+
+Name                  : Public
+Enabled               : True
+DefaultInboundAction  : NotConfigured
+DefaultOutboundAction : NotConfigured
+LogAllowed            : False
+LogBlocked            : False
+
+PS C:\Users\Adams-PC1-1> Get-SmbServerConfiguration | select EnableSMB1Protocol
+
+EnableSMB1Protocol
+------------------
+             False
+
+PS C:\Users\Adams-PC1-1> auditpol /set /subcategory:"Process Creation" /success:enable /failure:enable
+The command was successfully executed.
+PS C:\Users\Adams-PC1-1> reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit" `
+        /v ProcessCreationIncludeCmdLine_Enabled /t REG_DWORD /d 1 /f
+
+PS C:\Users\Adams-PC1-1> $sbl = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging"
+PS C:\Users\Adams-PC1-1> if (-not (Test-Path $sbl)) { New-Item -Path $sbl -Force | Out-Null }
+PS C:\Users\Adams-PC1-1> Set-ItemProperty -Path $sbl -Name EnableScriptBlockLogging -Value 1
+PS C:\Users\Adams-PC1-1> $dest = "$env:USERPROFILE\Downloads\lab3-win"
+PS C:\Users\Adams-PC1-1> New-Item -ItemType Directory -Force -Path $dest | Out-Null
+PS C:\Users\Adams-PC1-1> Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sysmon.zip"           -OutFile "$dest\Sysmon.zip"
+PS C:\Users\Adams-PC1-1> Invoke-WebRequest -Uri "https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml" -OutFile "$dest\sysmonconfig.xml"
+PS C:\Users\Adams-PC1-1> Expand-Archive "$dest\Sysmon.zip" -DestinationPath $dest -Force
+PS C:\Users\Adams-PC1-1> Set-Location $dest
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> .\Sysmon64.exe -accepteula -i sysmonconfig.xml
+
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> # Verify Sysmon is running
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> Get-Service Sysmon64
+
+Status   Name               DisplayName
+------   ----               -----------
+Running  Sysmon64           Sysmon64
+
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> Start-Process -FilePath "powershell.exe" -Verb runAs -ArgumentList "-Command", "runas /user:BadUser1 cmd" -ErrorAction SilentlyContinue
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> $cmd = 'Write-Host "Lab 3 - simulated encoded PowerShell activity"'
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> $b64 = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($cmd))
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> powershell.exe -EncodedCommand $b64\
+
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> $cmd = 'Write-Host "Lab 3 - simulated encoded PowerShell activity"'
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> $b64 = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($cmd))
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> powershell.exe -EncodedCommand $b64
+
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> net user midtermsuspect P@ssw0rd! /add
+
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> net user midtermsuspect /delete
+
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> Get-WinEvent -FilterHashtable ... | ConvertTo-Json -Depth 5
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> TerminatingError(Get-WinEvent): "Cannot bind parameter 'FilterHashtable'. Cannot convert the "..." value of type "System.String" to type "System.Collections.Hashtable"."
+Get-WinEvent: Cannot bind parameter 'FilterHashtable'. Cannot convert the "..." value of type "System.String" to type "System.Collections.Hashtable".
+Get-WinEvent: Cannot bind parameter 'FilterHashtable'. Cannot convert the "..." value of type "System.String" to type "System.Collections.Hashtable".
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> Get-Winevent -FilterHashtable -LogName Security -MaxEvents 100 | ConvertTo-Json -Depth 5 | Out-File "C:\Users\Adams-PC1-1\Documents\School work\EMU Clases\IA-462\Midterm\Windows\security-events.json"
+>> TerminatingError(Get-WinEvent): "Missing an argument for parameter 'FilterHashtable'. Specify a parameter of type 'System.Collections.Hashtable[]' and try again."
+Get-WinEvent: Missing an argument for parameter 'FilterHashtable'. Specify a parameter of type 'System.Collections.Hashtable[]' and try again.
+Get-WinEvent: Missing an argument for parameter 'FilterHashtable'. Specify a parameter of type 'System.Collections.Hashtable[]' and try again.
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> Get-Winevent -LogName Security -MaxEvents 100 | ConvertTo-Json -Depth 5 | Out-File "C:\Users\Adams-PC1-1\Documents\School work\EMU Clases\IA-462\Midterm\Windows\security-events.json"
+WARNING: Resulting JSON is truncated as serialization has exceeded the set depth of 5.
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> Get-MpPreference
+
+RunspaceId                                            : 5a5d3387-23c6-48c9-9da4-8cd91198180e
+AiAgentNetworkInspection                              : 0
+AiAgentProtection                                     : 0
+AllowDatagramProcessingOnWinServer                    : False
+AllowNetworkProtectionDownLevel                       : False
+AllowNetworkProtectionOnWinServer                     : False
+AllowSwitchToAsyncInspection                          : True
+ApplyDisableNetworkScanningToIOAV                     : False
+AttackSurfaceReductionOnlyExclusions                  : 
+AttackSurfaceReductionRules_Actions                   : 
+AttackSurfaceReductionRules_Ids                       : 
+AttackSurfaceReductionRules_RuleSpecificExclusions    : 
+AttackSurfaceReductionRules_RuleSpecificExclusions_Id : 
+BruteForceProtectionAggressiveness                    : 0
+BruteForceProtectionConfiguredState                   : 0
+BruteForceProtectionExclusions                        : 
+BruteForceProtectionLocalNetworkBlocking              : False
+BruteForceProtectionMaxBlockTime                      : 0
+BruteForceProtectionSkipLearningPeriod                : False
+CheckForSignaturesBeforeRunningScan                   : False
+CloudBlockLevel                                       : 0
+CloudExtendedTimeout                                  : 0
+ComputerID                                            : B149FF8A-80E1-400C-9498-924642850B48
+ControlledFolderAccessAllowedApplications             : 
+ControlledFolderAccessDefaultProtectedFolders         : {N/A: Controlled Folder Access is disabled}
+ControlledFolderAccessProtectedFolders                : 
+DefinitionUpdatesChannel                              : 0
+DeploymentChannel                                     : 0
+DisableArchiveScanning                                : False
+DisableAutoExclusions                                 : False
+DisableBehaviorMonitoring                             : False
+DisableBlockAtFirstSeen                               : False
+DisableCacheMaintenance                               : False
+DisableCatchupFullScan                                : True
+DisableCatchupQuickScan                               : True
+DisableCoreServiceECSIntegration                      : False
+DisableCoreServiceTelemetry                           : False
+DisableCpuThrottleOnIdleScans                         : True
+DisableDatagramProcessing                             : False
+DisableDnsOverTcpParsing                              : False
+DisableDnsParsing                                     : False
+DisableEmailScanning                                  : True
+DisableFtpParsing                                     : False
+DisableGradualRelease                                 : False
+DisableHttpParsing                                    : False
+DisableInboundConnectionFiltering                     : False
+DisableIOAVProtection                                 : False
+DisableNetworkProtectionPerfTelemetry                 : False
+DisablePrivacyMode                                    : False
+DisableQuicParsing                                    : True
+DisableRdpParsing                                     : False
+DisableRealtimeMonitoring                             : False
+DisableRemovableDriveScanning                         : True
+DisableRestorePoint                                   : True
+DisableScanningMappedNetworkDrivesForFullScan         : True
+DisableScanningNetworkFiles                           : False
+DisableScriptScanning                                 : False
+DisableSmtpParsing                                    : False
+DisableSshParsing                                     : False
+DisableTamperProtection                               : False
+DisableTlsParsing                                     : False
+EnableControlledFolderAccess                          : 0
+EnableConvertWarnToBlock                              : False
+EnableDnsSinkhole                                     : True
+EnableFileHashComputation                             : False
+EnableFullScanOnBatteryPower                          : False
+EnableLowCpuPriority                                  : False
+EnableNetworkProtection                               : 0
+EnablePackageInspection                               : 0
+EnableUdpReceiveOffload                               : False
+EnableUdpSegmentationOffload                          : False
+EngineUpdatesChannel                                  : 0
+ExclusionExtension                                    : 
+ExclusionIpAddress                                    : 
+ExclusionPath                                         : 
+ExclusionProcess                                      : 
+ForceUseProxyOnly                                     : False
+HideExclusionsFromLocalUsers                          : True
+HighThreatDefaultAction                               : 0
+IntelTDTEnabled                                       : False
+LowThreatDefaultAction                                : 0
+MAPSReporting                                         : 2
+MeteredConnectionUpdates                              : False
+ModerateThreatDefaultAction                           : 0
+NetworkProtectionReputationMode                       : 0
+OobeEnableRtpAndSigUpdate                             : False
+PerformanceModeStatus                                 : 1
+PlatformUpdatesChannel                                : 0
+PromptEvidenceCollection                              : False
+ProxyBypass                                           : 
+ProxyPacUrl                                           : 
+ProxyServer                                           : 
+PUAProtection                                         : 1
+QuarantinePurgeItemsAfterDelay                        : 90
+QuickScanIncludeExclusions                            : 0
+RandomizeScheduleTaskTimes                            : True
+RealTimeScanDirection                                 : 0
+RemediationScheduleDay                                : 0
+RemediationScheduleTime                               : 02:00:00
+RemoteEncryptionProtectionAggressiveness              : 0
+RemoteEncryptionProtectionConfiguredState             : 0
+RemoteEncryptionProtectionExclusions                  : 
+RemoteEncryptionProtectionMaxBlockTime                : 0
+RemoveScanningThreadPoolCap                           : False
+ReportDynamicSignatureDroppedEvent                    : False
+ReportingAdditionalActionTimeOut                      : 10080
+ReportingCriticalFailureTimeOut                       : 10080
+ReportingNonCriticalTimeOut                           : 1440
+ScanAvgCPULoadFactor                                  : 50
+ScanOnlyIfIdleEnabled                                 : True
+ScanParameters                                        : 1
+ScanPurgeItemsAfterDelay                              : 15
+ScanScheduleDay                                       : 0
+ScanScheduleOffset                                    : 120
+ScanScheduleQuickScanTime                             : 00:00:00
+ScanScheduleTime                                      : 02:00:00
+SchedulerRandomizationTime                            : 4
+ServiceHealthReportInterval                           : 60
+SevereThreatDefaultAction                             : 0
+SharedSignaturesPath                                  : 
+SharedSignaturesPathUpdateAtScheduledTimeOnly         : False
+SignatureAuGracePeriod                                : 0
+SignatureBlobFileSharesSources                        : 
+SignatureBlobUpdateInterval                           : 60
+SignatureDefinitionUpdateFileSharesSources            : 
+SignatureDisableUpdateOnStartupWithoutEngine          : False
+SignatureFallbackOrder                                : MicrosoftUpdateServer|MMPC
+SignatureFirstAuGracePeriod                           : 120
+SignatureScheduleDay                                  : 8
+SignatureScheduleTime                                 : 01:45:00
+SignatureUpdateCatchupInterval                        : 1
+SignatureUpdateInterval                               : 0
+SubmitSamplesConsent                                  : 1
+ThreatIDDefaultAction_Actions                         : {6}
+ThreatIDDefaultAction_Ids                             : {311999}
+ThrottleForScheduledScanOnly                          : True
+TrustLabelProtectionStatus                            : 0
+UILockdown                                            : False
+UnknownThreatDefaultAction                            : 0
+
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> Get-MpPreference
+
+RunspaceId                                            : 5a5d3387-23c6-48c9-9da4-8cd91198180e
+AiAgentNetworkInspection                              : 0
+AiAgentProtection                                     : 0
+AllowDatagramProcessingOnWinServer                    : False
+AllowNetworkProtectionDownLevel                       : False
+AllowNetworkProtectionOnWinServer                     : False
+AllowSwitchToAsyncInspection                          : True
+ApplyDisableNetworkScanningToIOAV                     : False
+AttackSurfaceReductionOnlyExclusions                  : 
+AttackSurfaceReductionRules_Actions                   : 
+AttackSurfaceReductionRules_Ids                       : 
+AttackSurfaceReductionRules_RuleSpecificExclusions    : 
+AttackSurfaceReductionRules_RuleSpecificExclusions_Id : 
+BruteForceProtectionAggressiveness                    : 0
+BruteForceProtectionConfiguredState                   : 0
+BruteForceProtectionExclusions                        : 
+BruteForceProtectionLocalNetworkBlocking              : False
+BruteForceProtectionMaxBlockTime                      : 0
+BruteForceProtectionSkipLearningPeriod                : False
+CheckForSignaturesBeforeRunningScan                   : False
+CloudBlockLevel                                       : 0
+CloudExtendedTimeout                                  : 0
+ComputerID                                            : B149FF8A-80E1-400C-9498-924642850B48
+ControlledFolderAccessAllowedApplications             : 
+ControlledFolderAccessDefaultProtectedFolders         : {N/A: Controlled Folder Access is disabled}
+ControlledFolderAccessProtectedFolders                : 
+DefinitionUpdatesChannel                              : 0
+DeploymentChannel                                     : 0
+DisableArchiveScanning                                : False
+DisableAutoExclusions                                 : False
+DisableBehaviorMonitoring                             : False
+DisableBlockAtFirstSeen                               : False
+DisableCacheMaintenance                               : False
+DisableCatchupFullScan                                : True
+DisableCatchupQuickScan                               : True
+DisableCoreServiceECSIntegration                      : False
+DisableCoreServiceTelemetry                           : False
+DisableCpuThrottleOnIdleScans                         : True
+DisableDatagramProcessing                             : False
+DisableDnsOverTcpParsing                              : False
+DisableDnsParsing                                     : False
+DisableEmailScanning                                  : True
+DisableFtpParsing                                     : False
+DisableGradualRelease                                 : False
+DisableHttpParsing                                    : False
+DisableInboundConnectionFiltering                     : False
+DisableIOAVProtection                                 : False
+DisableNetworkProtectionPerfTelemetry                 : False
+DisablePrivacyMode                                    : False
+DisableQuicParsing                                    : True
+DisableRdpParsing                                     : False
+DisableRealtimeMonitoring                             : False
+DisableRemovableDriveScanning                         : True
+DisableRestorePoint                                   : True
+DisableScanningMappedNetworkDrivesForFullScan         : True
+DisableScanningNetworkFiles                           : False
+DisableScriptScanning                                 : False
+DisableSmtpParsing                                    : False
+DisableSshParsing                                     : False
+DisableTamperProtection                               : False
+DisableTlsParsing                                     : False
+EnableControlledFolderAccess                          : 0
+EnableConvertWarnToBlock                              : False
+EnableDnsSinkhole                                     : True
+EnableFileHashComputation                             : False
+EnableFullScanOnBatteryPower                          : False
+EnableLowCpuPriority                                  : False
+EnableNetworkProtection                               : 0
+EnablePackageInspection                               : 0
+EnableUdpReceiveOffload                               : False
+EnableUdpSegmentationOffload                          : False
+EngineUpdatesChannel                                  : 0
+ExclusionExtension                                    : 
+ExclusionIpAddress                                    : 
+ExclusionPath                                         : {C:\Python314}
+ExclusionProcess                                      : 
+ForceUseProxyOnly                                     : False
+HideExclusionsFromLocalUsers                          : True
+HighThreatDefaultAction                               : 0
+IntelTDTEnabled                                       : False
+LowThreatDefaultAction                                : 0
+MAPSReporting                                         : 2
+MeteredConnectionUpdates                              : False
+ModerateThreatDefaultAction                           : 0
+NetworkProtectionReputationMode                       : 0
+OobeEnableRtpAndSigUpdate                             : False
+PerformanceModeStatus                                 : 1
+PlatformUpdatesChannel                                : 0
+PromptEvidenceCollection                              : False
+ProxyBypass                                           : 
+ProxyPacUrl                                           : 
+ProxyServer                                           : 
+PUAProtection                                         : 1
+QuarantinePurgeItemsAfterDelay                        : 90
+QuickScanIncludeExclusions                            : 0
+RandomizeScheduleTaskTimes                            : True
+RealTimeScanDirection                                 : 0
+RemediationScheduleDay                                : 0
+RemediationScheduleTime                               : 02:00:00
+RemoteEncryptionProtectionAggressiveness              : 0
+RemoteEncryptionProtectionConfiguredState             : 0
+RemoteEncryptionProtectionExclusions                  : 
+RemoteEncryptionProtectionMaxBlockTime                : 0
+RemoveScanningThreadPoolCap                           : False
+ReportDynamicSignatureDroppedEvent                    : False
+ReportingAdditionalActionTimeOut                      : 10080
+ReportingCriticalFailureTimeOut                       : 10080
+ReportingNonCriticalTimeOut                           : 1440
+ScanAvgCPULoadFactor                                  : 50
+ScanOnlyIfIdleEnabled                                 : True
+ScanParameters                                        : 1
+ScanPurgeItemsAfterDelay                              : 15
+ScanScheduleDay                                       : 0
+ScanScheduleOffset                                    : 120
+ScanScheduleQuickScanTime                             : 00:00:00
+ScanScheduleTime                                      : 02:00:00
+SchedulerRandomizationTime                            : 4
+ServiceHealthReportInterval                           : 60
+SevereThreatDefaultAction                             : 0
+SharedSignaturesPath                                  : 
+SharedSignaturesPathUpdateAtScheduledTimeOnly         : False
+SignatureAuGracePeriod                                : 0
+SignatureBlobFileSharesSources                        : 
+SignatureBlobUpdateInterval                           : 60
+SignatureDefinitionUpdateFileSharesSources            : 
+SignatureDisableUpdateOnStartupWithoutEngine          : False
+SignatureFallbackOrder                                : MicrosoftUpdateServer|MMPC
+SignatureFirstAuGracePeriod                           : 120
+SignatureScheduleDay                                  : 8
+SignatureScheduleTime                                 : 01:45:00
+SignatureUpdateCatchupInterval                        : 1
+SignatureUpdateInterval                               : 0
+SubmitSamplesConsent                                  : 1
+ThreatIDDefaultAction_Actions                         : {6}
+ThreatIDDefaultAction_Ids                             : {311999}
+ThrottleForScheduledScanOnly                          : True
+TrustLabelProtectionStatus                            : 0
+UILockdown                                            : False
+UnknownThreatDefaultAction                            : 0
+
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> Get-MpPreference | Select-Object exclusionpath
+
+exclusionpath
+-------------
+{C:\Python314}
+
+PS C:\Users\Adams-PC1-1\Downloads\lab3-win> Get-MpPreference | Out-File "C:\Users\Adams-PC1-1\Documents\School work\EMU Clases\IA-462\Midterm\Windows\defender-exclusions.txt"
