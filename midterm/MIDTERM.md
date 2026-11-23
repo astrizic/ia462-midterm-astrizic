@@ -23,10 +23,10 @@ A common hardening step in hardening Docker is to minimize the installed package
 GitHub version control helps enforce branch protection rules, such as those discussed on slide 4 of Week 8. GitHub Actions, also shown on that slide, can run security checks when triggered by events such as pushes or pull requests. A dependency lock file, such as the one discussed on slide 6 of Week 8, pins the exact versions of dependencies to reduce the risk of unexpected or unauthorized dependency changes. Running a vulnerability scanner such as Trivy can identify vulnerable packages before they are included in the Docker image. A software bill of materials (SBOM) helps identify the packages in the image so they can be monitored for new vulnerabilities.
 
 **4**
--- Apply enterprise patch and policy management for Docker Containers, including container hardening. is connected to section 5 and 6
--- Implement Windows and Linux best practices to protect against Supply Chain Attacks is connected to sections 1 and 2
--- Understand and integrate Software Bill of Materials (SBOM) into Docker Container workflow is co0nnected to sections 4 and 6
--- Perform Vulnerability Management: scan, patch, and retest continuously using CI/CD techniques in GitHub i connected to sections 1,2, 4, and 6
--- Apply Dependency Pinning, Version Control, and Hashing to reduce surprise supply chain attacks. is connected to section 6 and 3
+- Apply enterprise patch and policy management for Docker Containers, including container hardening. is connected to section 5 and 6
+- Implement Windows and Linux best practices to protect against Supply Chain Attacks is connected to sections 1 and 2
+- Understand and integrate Software Bill of Materials (SBOM) into Docker Container workflow is co0nnected to sections 4 and 6
+- Perform Vulnerability Management: scan, patch, and retest continuously using CI/CD techniques in GitHub i connected to sections 1,2, 4, and 6
+- Apply Dependency Pinning, Version Control, and Hashing to reduce surprise supply chain attacks. is connected to section 6 and 3
 
 
